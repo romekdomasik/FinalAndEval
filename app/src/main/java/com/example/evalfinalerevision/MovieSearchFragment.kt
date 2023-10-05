@@ -5,28 +5,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.evalfinalerevision.databinding.FragmentMovieSearchBinding
+import com.example.evalfinalerevision.model.MovieResult
+import com.example.evalfinalerevision.service.MovieServiceImpl
+import com.example.evalfinalerevision.ui.ViewAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MovieSearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MovieSearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
+    private lateinit var binding: FragmentMovieSearchBinding
+
+    private val movieService by lazy { MovieServiceImpl() }
+    private val apiKey = "55530312075972a425f5fa13e21b218f"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -34,26 +32,41 @@ class MovieSearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_movie_search, container, false)
+        binding = FragmentMovieSearchBinding.inflate(inflater, container, false)
+
+        val btnSearch = binding.searchBtn
+        btnSearch.setOnClickListener {
+            val movieName = binding.searchBar.text.toString()
+            getMovies(movieName)
+        }
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MovieSearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MovieSearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
+    private fun getMovies(movie: String){
+        //se met sur le thread IO, execute sur le thread secondaire
+        CoroutineScope(Dispatchers.IO).launch {
+            //tâches en arriere-plan
+            val response = movieService.getMovie(movie, apiKey)
+            //retourne sur le main thread
+            withContext(Dispatchers.Main){
+                val movieList = response.results
+                if (movieList != null) {
+                    setupRecyclerView(movieList)
+                } else {
+                    println("movieList est nul ")
                 }
             }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    fun setupRecyclerView(movieList: MovieResult){
+        val recyclerView = binding.recyclerView
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 2, RecyclerView.VERTICAL, false)
+        recyclerView.adapter = ViewAdapter(movieList.results)
     }
 }
