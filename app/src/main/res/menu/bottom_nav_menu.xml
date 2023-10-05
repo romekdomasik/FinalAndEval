@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@id/movieSearchFragment"
+        android:title="Search"
+        android:icon="@drawable/search"
+        android:iconTintMode="src_atop"/>
+    <item
+        android:id="@id/movieTrendFragment"
+        android:title="Trending"
+        android:icon="@drawable/fire"
+        android:iconTintMode="src_atop"
+        android:iconTint="@color/white"/>
+
+</menu>
