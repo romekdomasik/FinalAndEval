@@ -7,9 +7,9 @@ data class MovieResponse (
 data class MovieResult (
     val id: Long,
     val overview: String?,
-    val posterPath: String? = null,
+    val poster_path: String?,
     var title: String?,
-    val voteAverage: Double?,
+    val vote_average: Double,
     val release_date: String?,
     val voteCount: Long?
 )
