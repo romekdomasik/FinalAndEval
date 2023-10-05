@@ -9,6 +9,7 @@ class ViewHolder(private var viewBinding: CellLayoutBinding): RecyclerView.ViewH
     fun bind(result: MovieResult){
         viewBinding.movieName.text = result.title
         viewBinding.movieDate.text = result.release_date
-        viewBinding.movieScore.text = result.voteAverage.toString()
+        viewBinding.movieImg.
+        viewBinding.movieScore.text = result.voteAverage?.toDouble().toString()
     }
 }

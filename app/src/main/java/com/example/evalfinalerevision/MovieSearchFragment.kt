@@ -5,9 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.evalfinalerevision.databinding.FragmentMovieSearchBinding
+import com.example.evalfinalerevision.model.MovieResponse
 import com.example.evalfinalerevision.model.MovieResult
 import com.example.evalfinalerevision.service.MovieServiceImpl
 import com.example.evalfinalerevision.ui.ViewAdapter
@@ -39,6 +43,7 @@ class MovieSearchFragment : Fragment() {
             val movieName = binding.searchBar.text.toString()
             getMovies(movieName)
         }
+
         return binding.root
     }
 
@@ -50,7 +55,7 @@ class MovieSearchFragment : Fragment() {
             val response = movieService.getMovie(movie, apiKey)
             //retourne sur le main thread
             withContext(Dispatchers.Main){
-                val movieList = response.results
+                val movieList = response
                 if (movieList != null) {
                     setupRecyclerView(movieList)
                 } else {
@@ -64,9 +69,10 @@ class MovieSearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun setupRecyclerView(movieList: MovieResult){
+    fun setupRecyclerView(movieList: MovieResponse){
         val recyclerView = binding.recyclerView
-        recyclerView.layoutManager = GridLayoutManager(requireContext(), 2, RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 1, RecyclerView.VERTICAL, false)
         recyclerView.adapter = ViewAdapter(movieList.results)
     }
+
 }
